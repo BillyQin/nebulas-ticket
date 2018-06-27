@@ -1,0 +1,42 @@
+.Footer {
+  width: 100%;
+  height: 0.675rem;
+  font-size: 0.14rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  color: #233846;
+  background-color: #fff;
+  bottom: 0;
+  left: 0;
+  border: 0.01rem solid #efefef;
+  padding: 0.135rem;
+  box-shadow: 0 -0.05rem 0.05rem rgba(115, 133, 182, 0.05);
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 0.5rem;
+
+    img {
+      width: 0.21rem;
+      margin-bottom: 0.05rem;
+    }
+
+    span {
+      display: inline;
+    }
+  }
+}
+
+@media only screen and (device-width: 375px) and (device-height: 812px) and
+(-webkit-device-pixel-ratio: 3) {
+  /* iPhone X 导航操作栏上移*/
+  .Footer {
+    bottom: 25px;
+  }
+}
+

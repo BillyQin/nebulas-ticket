@@ -1,0 +1,83 @@
+@import '../base.less';
+
+.chipIn {
+  color: #fff;
+  width: 100%;
+
+  .chip-in-title {
+    height: 1.75rem;
+    padding: 0 0.68rem;
+    background: @blue;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left {
+      .name {
+        margin-right: 1.1rem;
+      }
+    }
+  }
+
+  .nums {
+    height: 7.68rem;
+    background-image: linear-gradient(to bottom, #ffffff, #c0c0c0);
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+
+    .ball {
+      width: 1.08rem;
+      height: 1.08rem;
+      margin: 0.32rem 0.15rem;
+      color: #4a5470;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 0.66rem;
+      background: #fff;
+    }
+
+    .orange {
+      background: #ff5a00;
+      color: #fff;
+    }
+
+    .blue {
+      background: #3ca8fd;
+      color: #fff;
+    }
+  }
+
+  .dark {
+    height: 4.36rem;
+    background-image: linear-gradient(to bottom, #d1e1e1, #c1c1c1);
+  }
+
+  .confirm {
+    width: 100%;
+    background: #fff;
+    padding-left: 1.08rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 1.5rem;
+    img {
+      width: 1rem;
+      height: 1rem;
+    }
+    .btn {
+      background: @blue;
+      width: 2.88rem;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+    }
+    
+  }
+}
+
