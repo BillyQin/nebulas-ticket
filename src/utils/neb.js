@@ -1,14 +1,14 @@
 // var HttpRequest = require("nebulas").HttpRequest;
-// var Neb = window.nebulas.Neb;
-// var Neb = require("nebulas").Neb
+import { Neb, NVM, HttpRequest } from 'nebulas';
 // var Account = require("nebulas").Account;
 // var Transaction = require("nebulas").Transaction;
 // var Unit = require("nebulas").Unit;
 // var NVM = require("nebulas").NVM;
 import NebPay from 'nebpay';
 const myNebPay = new NebPay();
-// var neb = new Neb();
+const myNeb = new Neb();
 // neb.setRequest(new HttpRequest("https://testnet.nebulas.io"));
+myNeb.setRequest(new HttpRequest("http://localhost:8685"));
 
 const contactAddr = 'n1gHKnBYf5FA8djpXiVsPxvnLEjESrxUqjm'
 
@@ -50,5 +50,6 @@ const options = {
 export {
   myNebPay,
   options,
-  contactAddr
+	contactAddr,
+	myNeb
 }

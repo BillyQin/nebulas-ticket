@@ -59,7 +59,6 @@ class Buy extends Component {
   }
 
   submit = () => {
-
     this.props.history.push('/shop')
   }
 
@@ -67,8 +66,8 @@ class Buy extends Component {
     return (
       <div className="chipIn">
         <Header extends={
-          <img onClick={()=>this.props.history.goBack()} src={require('../assets/images/back.png')} />
-        }/>
+          <img className="header-img" onClick={()=>this.props.history.goBack()} src={require('../assets/images/back.png')}/>
+        } />
         <div className="chip-in-title">
           <div className="left">
             <span className="name">White</span>

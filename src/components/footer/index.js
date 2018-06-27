@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import './index.less';
 
 const pages = [
-  {name: 'home', link: '/', img: require('../../assets/images/foot1.png'), active: require('../../assets/images/foot1.png')},
-  {name: 'shop', link: '/shop', img: require('../../assets/images/foot2.png'), active: require('../../assets/images/foot1.png')},
-  {name: 'home', link: '/', img: require('../../assets/images/foot3.png'), active: require('../../assets/images/foot1.png')},
-  {name: 'home', link: '/', img: require('../../assets/images/foot4.png'), active: require('../../assets/images/foot1.png')}
+  {name: '首页', link: '/', img: require('../../assets/images/foot1.png'), active: require('../../assets/images/foot1.png')},
+  {name: '投注', link: '/shop', img: require('../../assets/images/foot2.png'), active: require('../../assets/images/foot1.png')},
+  {name: '记录', link: '/record', img: require('../../assets/images/foot4.png'), active: require('../../assets/images/foot1.png')},
+  {name: '我的', link: '/user', img: require('../../assets/images/foot3.png'), active: require('../../assets/images/foot1.png')}
 ]
 
 class Footer extends Component {

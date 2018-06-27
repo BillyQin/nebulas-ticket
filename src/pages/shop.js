@@ -3,42 +3,47 @@ import { Link } from 'react-router-dom';
 import Header from '../components/header';
 import './shop.less';
 import { myNebPay, options, contactAddr } from '../utils/neb'
+import { randomNum } from '../utils/util';
 
 class Buy extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      ballLists: []
+      ballLists: [],
+      totalNums: 0,
+      num: 5
     }
   }
 
-  randomBall = (type='whiteBall') => {
-    let digit = type === 'whiteBall' ? 6 : 1
-    let total = type === 'whiteBall' ? 28 : 14
-    let result = []
-    while(result.length < digit) {
-      var rand = parseInt((Math.random()*total)+1);
-      rand = rand<10 ? `0${rand}`: rand.toString()
-      if (result.indexOf(rand) < 0) {
-        result.push(rand)
-      }
-    }
-    return result
-  }
-
-  randomNum = () => {
+  getRandomNum = () => {
     let ballLists = this.state.ballLists
-    const white = this.randomBall('whiteBall')
-    const blue = this.randomBall('blueBall')
-    ballLists.push({"white": white, "blue": blue, "num": 5})
-    this.setState({ballLists})
+    ballLists = ballLists.concat(randomNum())
+    this.updateBallLists(ballLists)
   }
 
   removeLists = (key) => {
     let ballLists = this.state.ballLists
     ballLists.splice(key, 1)
-    this.setState({ballLists})
+    this.updateBallLists(ballLists)
+  }
+
+  _changeValue = (value, key) => {
+    let ballLists = this.state.ballLists
+    ballLists[key].num = value
+    this.updateBallLists(ballLists)
+  }
+
+  _changeNum = (value) => {
+    this.updateBallLists(this.state.ballLists, value)
+  }
+
+  updateBallLists = (ballLists, value=this.state.num) => {
+    let totalNums = 0
+    ballLists.map((item) => {
+      totalNums += (parseInt(item.num) || 0) * (parseInt(value) || 0)
+    })
+    this.setState({ballLists, totalNums: parseInt(totalNums), num: value})
   }
 
   submit = () => {
@@ -46,20 +51,17 @@ class Buy extends Component {
     this.state.ballLists.map((item) => {
       totalPrice += (item.num * 0.1)
     })
-    let params = []
-    this.state.ballLists.map(item => {
-      params.push(JSON.stringify(item))
-    })
 
     let txHash = myNebPay.call(contactAddr, totalPrice, 'buyTicket', JSON.stringify([this.state.ballLists]), options)
-
     console.log(txHash)
   }
 
   render() {
     return (
       <div className="shop">
-        <Header />
+        <Header extends={
+          <img className="header-img" onClick={()=>this.props.history.goBack()} src={require('../assets/images/back.png')}/>
+        } />
         <div className="shop-in-title">
           <p>头奖: 100nas</p>
           <p>距离下期开奖还有：xx-xx-xx</p>
@@ -74,20 +76,24 @@ class Buy extends Component {
                   <div className={`ball`} key={key}>{item}</div>
                 ))}
                 <div className={`ball blue`}>{item.blue[0]}</div>
-                <input type="number" defaultValue={item.num} />
+                <input type="number" onChange={(e)=>{this._changeValue(e.target.value, key)}} defaultValue={item.num} />
                 <img onClick={()=>this.removeLists(key)} src={require('../assets/images/xx.png')} />
               </div>
             ))
           }
           </div>
           <div className="btn-box">
+            <div className="price">
+              <img src={require('../assets/images/xx.png')} />
+              <input type="number" onChange={(e) => {this._changeNum(e.target.value)}} defaultValue={this.state.num} />
+            </div>
             <div className="btn"><Link to="/chipIn">选号</Link></div>
-            <div onClick={()=>this.randomNum()} className="btn">快速选号</div>
+            <div onClick={()=>this.getRandomNum()} className="btn">快速选号</div>
           </div>
         </div>
         <div className="confirm">
-          <div>
-            <img src={require('../assets/images/ticket.png')} />
+          <div className="total-price">
+            <p>总计：{this.state.totalNums}注 {}NAS</p>
           </div>
           <div className="btn" onClick={()=>{this.submit()}}>购买</div>
         </div>

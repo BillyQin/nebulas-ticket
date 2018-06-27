@@ -261,6 +261,7 @@ module.exports = {
     hints: false,
   },
   externals: {
-    nebpay: 'commonjs2 nebpay'
+    nebpay: 'commonjs2 nebpay',
+    nebulas: 'commonjs2 nebulas'
   }
 };
