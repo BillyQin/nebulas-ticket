@@ -11,14 +11,8 @@ const myNeb = new Neb();
 myNeb.setRequest(new HttpRequest("http://localhost:8685"));
 
 const contactAddr = 'n1gHKnBYf5FA8djpXiVsPxvnLEjESrxUqjm'
-
+const addr = localStorage.getItem('address') || contactAddr
 const options = {
-	// goods: {        //Dapp端对当前交易商品的描述信息，app暂时不展示
-	// 	name: "",       //商品名称
-	// 	desc: "",       //描述信息
-	// 	orderId: "",    //订单ID
-	// 	ext: ""         //扩展字段
-	// },
 	qrcode: {
 		showQRCode: false,      //是否显示二维码信息
 		container: undefined,    //指定显示二维码的canvas容器，不指定则生成一个默认canvas
@@ -47,9 +41,20 @@ const options = {
 	debug: false
 };
 
+const callOptions = {
+	chainID: 1,
+	from: addr,
+	to: contactAddr,
+	value: 0,
+	nonce: 12,
+	gasPrice: 1000000,
+	gasLimit: 2000000
+}
+
 export {
   myNebPay,
   options,
 	contactAddr,
-	myNeb
+	myNeb,
+	callOptions
 }

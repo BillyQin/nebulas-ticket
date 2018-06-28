@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/header';
+import Footer from '../components/footer';
 import './shop.less';
 import { myNebPay, options, contactAddr } from '../utils/neb'
 import { randomNum } from '../utils/util';
@@ -47,12 +48,11 @@ class Buy extends Component {
   }
 
   submit = () => {
-    let totalPrice = 0
-    this.state.ballLists.map((item) => {
-      totalPrice += (item.num * 0.1)
-    })
-
-    let txHash = myNebPay.call(contactAddr, totalPrice, 'buyTicket', JSON.stringify([this.state.ballLists]), options)
+    // let totalPrice = 0
+    // this.state.ballLists.map((item) => {
+    //   totalPrice += item.num * 0.1
+    // })
+    let txHash = myNebPay.call(contactAddr, this.state.totalNums*0.1, 'buyTicket', JSON.stringify([this.state.ballLists]), options)
     console.log(txHash)
   }
 
@@ -97,7 +97,7 @@ class Buy extends Component {
           </div>
           <div className="btn" onClick={()=>{this.submit()}}>购买</div>
         </div>
-        {/* <Footer /> */}
+        <Footer />
       </div>
     )
   }

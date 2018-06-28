@@ -47,7 +47,7 @@ class Home extends Component {
           <div className="lists">
             <div className="price">
               <p>奖池</p>
-              <span>100NAS</span>
+              <span>0NAS</span>
             </div>
             <div className="count-down-box">
               <span>距离下期开奖</span>

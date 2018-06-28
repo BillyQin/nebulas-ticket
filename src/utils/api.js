@@ -7,11 +7,13 @@ var userTicketInfo = function (text) {
     this.blue = obj.blue;   // 蓝球
     this.num = obj.num;    // 下注数量
     this.term = obj.term;    // 下注期
+    this.level = obj.level
   } else {
     this.white = []; // 白球
     this.blue = 0;   // 蓝球
     this.num = new BigNumber(0);    // 下注数量
     this.term = 0;    // 下注期
+    this.level = null
   }
 };
 
@@ -27,9 +29,11 @@ var historyInfo = function (text) {
     var obj = JSON.parse(text);
     this.white = obj.white; // 白球
     this.blue = obj.blue;   // 蓝球
+    this.term = obj.term;   // 开奖期数
   } else {
     this.white = []; // 白球
-    this.blue = 0;   // 蓝球
+    this.blue = [];   // 蓝球
+    this.term = 1;   // 开奖期数
   }
 };
 
@@ -56,14 +60,22 @@ var LotteryTicketContract = function () {
     }
   });
 
-  // 用户下注记录
+  // 用户下注记录 (addr+term) => [ticket1,ticket2]
   LocalContractStorage.defineMapProperty(this, "ticketHistoryMap", {
     parse: function (str) {
-      console.log(str)
-      return str ? JSON.parse(str) : []
+      return JSON.parse(str)
     },
     stringify: function (obj) {
-      console.log(obj)
+      return JSON.stringify(obj)
+    }
+  });
+
+  // 历史投注记录 (term) => [addr]
+  LocalContractStorage.defineMapProperty(this, "ticketHistoryRecordMap", {
+    parse: function (str) {
+      return JSON.parse(str)
+    },
+    stringify: function (obj) {
       return JSON.stringify(obj)
     }
   });
@@ -107,7 +119,6 @@ LotteryTicketContract.prototype = {
       userTickets = []
     }
     let totalNum = 0
-    console.log(tickets)
     tickets.map(item => {
       var whiteBall = item.white;
       var blueBall = item.blue;
@@ -133,6 +144,12 @@ LotteryTicketContract.prototype = {
     if (totalNum > value.div(new BigNumber('1e18')).div(new BigNumber(this.minAmount)).toString()) {
       throw new Error("投注失败，请投注正确的金额");
     }
+    let termHistory = this.ticketHistoryRecordMap.get(this.term) || []
+    if (!termHistory.includes(`${from}|${this.term}`)) {
+      termHistory.push(`${from}|${this.term}`)
+      this.ticketHistoryRecordMap.set(this.term, termHistory)
+    }
+
     this.ticketHistoryMap.set(key, userTickets)
   },
 
@@ -148,10 +165,9 @@ LotteryTicketContract.prototype = {
   // 查询下注信息
   getTicketInfo: function (term) {
     var from = Blockchain.transaction.from;
-    console.log(this.historyResult.get(from))
     if (term) {
       let key = `${from}|${term}`
-      return this.ticketHistoryMap.get(key);
+      return this.ticketHistoryMap.get(key) || [];
     } else {
       let res = []
       for (let i = 1; i<=this.term; i++) {
@@ -180,10 +196,43 @@ LotteryTicketContract.prototype = {
     while(result.length < digit) {
       var rand = parseInt((Math.random()*total)+1);
       if (result.indexOf(rand) < 0) {
-        result.push(rand)
+        result.push(rand<10?`0${rand}`:`${rand}`)
       }
     }
     return result.sort((a,b) => {return a-b});
+  },
+
+  // 获奖计算
+  _getLevelPrice: function (user, answer) {
+    let whiteNum = 0
+    let blueNum = 0
+    for(let i = 0; i<this.whiteNum; i++) {
+      let ball = user.white[i]
+      if (answer.white.includes(ball) && answer.white.indexOf(ball) === answer.white.lastIndexOf(ball)) {
+        whiteNum += 1
+      }
+    }
+    if (user.blue[0] === answer.blue[0]) {
+      blueNum += 1
+    }
+
+    if (blueNum === 0) {
+      switch (whiteNum) {
+        case 4: return 5;
+        case 5: return 4;
+        case 6: return 2;
+        default: return 0;
+      }
+    } else if (blueNum === 1) {
+      switch (whiteNum) {
+        case 0,1,2: return 6;
+        case 3: return 5;
+        case 4: return 4;
+        case 5: return 3;
+        case 6: return 1;
+        default: return 0;
+      }
+    }
   },
 
   // 开奖
@@ -194,19 +243,36 @@ LotteryTicketContract.prototype = {
     var history = new historyInfo()
     history.white = whileBall
     history.blue = blueBall
+    history.term = this.term
     this.historyResult.put(this.term, history);
+
+    let total = this.ticketHistoryRecordMap.get(this.term)
+    total.map(item => {
+      let userTicket = this.ticketHistoryMap.get(item)
+      userTicket.map(i => {
+        let level = this._getLevelPrice(history, i)
+        console.log('level', level)
+        i.level =level
+      })
+      this.ticketHistoryMap.set(item, userTicket)
+    })
+
     this.term += 1;
   },
 
-  // 查询某期开奖结果
-  getLottery: function (index) {
-    if (index) {
-      if (index >= this.term) {
-        throw new Error("未开奖");
-      }
-      return this.historyResult.get(index);
+  // 查询开奖结果
+  getLottery: function (num) {
+    let result = []
+    const term = this.term-1
+    let index = num ? num : term
+    for (let i = term; i > parseInt(term-index); i--) {
+      result.push(this.historyResult.get(i))
     }
-    return this.historyResult.get(this.term-1);
+    return result
+  },
+  // 查询当前期数
+  getTerm: function () {
+    return this.term
   },
 
   _verifyAdmin: function() {
