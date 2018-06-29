@@ -7,10 +7,11 @@ import { Neb, NVM, HttpRequest } from 'nebulas';
 import NebPay from 'nebpay';
 const myNebPay = new NebPay();
 const myNeb = new Neb();
-// neb.setRequest(new HttpRequest("https://testnet.nebulas.io"));
-myNeb.setRequest(new HttpRequest("http://localhost:8685"));
+// myNeb.setRequest(new HttpRequest("https://mainnet.nebulas.io"));
+myNeb.setRequest(new HttpRequest("https://mainnet.nebulas.io"));
+// myNeb.setRequest(new HttpRequest("http://localhost:8685"));
 
-const contactAddr = 'n1gHKnBYf5FA8djpXiVsPxvnLEjESrxUqjm'
+const contactAddr = 'n1jWz4S7yUc18pjRLSHvMv6AqkcEDx839ot'
 const addr = localStorage.getItem('address') || contactAddr
 const options = {
 	qrcode: {
@@ -45,10 +46,10 @@ const callOptions = {
 	chainID: 1,
 	from: addr,
 	to: contactAddr,
-	value: 0,
+	value: '0',
 	nonce: 12,
-	gasPrice: 1000000,
-	gasLimit: 2000000
+	gasPrice: '1000000',
+	gasLimit: '2000000'
 }
 
 export {

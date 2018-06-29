@@ -16,25 +16,28 @@ class User extends Component {
     }
   }
 
-  componentWillMount () {
+  async componentWillMount () {
     const address = localStorage.getItem('address')
     if (address) {
       this.setState({address})
-      this.getAccountInfo(address)
+      await this.getAccountInfo(address)
       this.getUserHistory(address)
       // this.getTerm()
     }
   }
 
   getUserHistory = (addr) => {
+    let nonce = localStorage.getItem('nonce') || 1
     let options = Object.assign({}, callOptions, {
       from: addr,
+      nonce,
       contract: {
         function: "getTicketInfo",
-        args: "[]"
+        args: ""
       }
     })
     myNeb.api.call(options).then((res) => {
+      console.log('userrrrr',res)
       let lists = JSON.parse(res.result)
       let form = {}
       lists.length && lists.map((item,key) => {
@@ -62,6 +65,7 @@ class User extends Component {
   getAccountInfo = (address) => {
     myNeb.api.getAccountState(address).then(res => {
       this.setState({balance: res.balance/Math.pow(10,18)})
+      localStorage.setItem('nonce', res.nonce)
     }).catch((err) => {
         console.log(err);
     });
@@ -76,6 +80,7 @@ class User extends Component {
       case 4: return '四等奖';
       case 5: return '五等奖';
       case 6: return '六等奖';
+      case 7: return '已领奖';
       default: return '未开奖'
     }
   }
@@ -92,9 +97,9 @@ class User extends Component {
         } />
         <div className="user-in-title">
           <p className="addr">{this.state.address}</p>
-          <div>
-          <p className="user">余额：{this.state.balance} NAS</p>
-          <div onClick={()=>this.getMoney()} className="base-btn">领奖</div>
+          <div className="balance">
+            <p className="user">余额：{this.state.balance} NAS</p>
+            <div onClick={()=>this.getMoney()} className="base-btn">领奖</div>
           </div>
         </div>
         <div className="lists">

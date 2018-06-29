@@ -52,6 +52,24 @@ var LotteryTicketContract = function () {
   LocalContractStorage.defineProperty(this, "whiteNum"); // 白球个数
   LocalContractStorage.defineProperty(this, "blueNum"); // 蓝球个数
   LocalContractStorage.defineProperty(this, "time"); // 开奖时间
+  // 合约余额
+  LocalContractStorage.defineProperty(this, "contractBalance", {
+    stringify: function (obj) {
+      return obj.toString();
+    },
+    parse: function (str) {
+      return new BigNumber(str);
+    }
+  });
+  LocalContractStorage.defineProperty(this, "grandPrize", {
+    stringify: function (obj) {
+      return obj.toString();
+    },
+    parse: function (str) {
+      return new BigNumber(str);
+    }
+  }); // 一等奖
+
 
   // 用户下注详情
   LocalContractStorage.defineMapProperty(this, "userTicket", {
@@ -102,7 +120,10 @@ LotteryTicketContract.prototype = {
     this.adminAddress = 'n1XSq26wvLaZ2tqYC5Y37MPr9ujQsSsSLBr';
     this.whiteNum = 6;
     this.time = new Date().getTime();
+    this.timeInterval = 0;
     this.term = 1;
+    this.contractBalance = new BigNumber(0);
+    this.grandPrize = new BigNumber(0);
   },
 
   getTime: function () {
@@ -136,7 +157,6 @@ LotteryTicketContract.prototype = {
       }
       for(var i =0;i < whiteBall.length; i++){
     　　if(whiteBall.indexOf(whiteBall[i]) !== whiteBall.lastIndexOf(whiteBall[i])){
-          console.log(whiteBall[i])
       　　throw new Error("号码重复，请投注正确的号码");
     　　}
       }
@@ -158,15 +178,43 @@ LotteryTicketContract.prototype = {
     }
 
     this.ticketHistoryMap.set(key, userTickets)
+    this.contractBalance = this.contractBalance.plus(value)
   },
 
   // 用户兑奖
   userTakeOut: function (term) {
-    // var from = Blockchain.transaction.from;
-    var result = this.getLottery(term);
+    var from = Blockchain.transaction.from;
+    for(let i = term; i > term-5; i--) {
+      if (i === 0) {
+        break;
+      }
+      let key = `${from}|${term}`
+      let info = this.ticketHistoryMap.get(key) || []
 
-    var userResult = this.getTicketInfo()
-    return [result, userResult]
+      if (info.length) {
+        info.map(item => {
+          if (item.level !== 0 && item.level !== 7) {
+            let value = 0
+            switch(item.level) {
+              case 6: value = new BigNumber('0.2');break;
+              case 5: value = new BigNumber('0.5');break;
+              case 4: value = new BigNumber('5');break;
+              case 3: value = new BigNumber('100');break;
+              case 2: value = new BigNumber('1500');break;
+              case 1: value = this.grandPrize;break;
+              default: value = new BigNumber('0');break;
+            }
+            if (value.toString() !== '0') {
+              let result = Blockchain.transfer(from, value.mul(new BigNumber('1e18')));
+              console.log(result)
+              this.contractBalance = this.contractBalance.minus(value)
+              item.level = 7
+            }
+          }
+        })
+      }
+      this.ticketHistoryMap.set(key, info)
+    }
   },
 
   // 查询下注信息
@@ -191,13 +239,17 @@ LotteryTicketContract.prototype = {
   },
 
   // 取钱
-  takeOut: function () {
+  takeOut: function (value) {
     this._verifyAdmin();
-    var from = Blockchain.transaction.from;
-    var result = Blockchain.transfer(from, this.minAmount);
-    if (!result) {
-      throw new Error("transfer failed.");
+    if (!value) {
+      value = 0
     }
+    var from = Blockchain.transaction.from;
+    var result = Blockchain.transfer(from, new BigNumber(value).mul(new BigNumber('1e18')));
+    // if (!result) {
+      // throw new Error("transfer failed.");
+    console.log(result)
+    // }
   },
 
   // 获取结果
@@ -249,15 +301,13 @@ LotteryTicketContract.prototype = {
   // 设置开奖时间(毫秒)
   setTime: function(time) {
     this._verifyAdmin();
-    this.time += parseInt(time);
-    return this.time;
+    this.timeInterval = parseInt(time)
+    return this.timeInterval;
   },
 
   // 开奖
   openLottery: function () {
     this._verifyAdmin();
-    console.log(this.time)
-    console.log(new Date().getTime())
     if (this.time > new Date().getTime()) {
       throw new Error("未到开奖时间");
     }
@@ -280,7 +330,8 @@ LotteryTicketContract.prototype = {
     })
 
     this.term += 1;
-    this.time = new Date().getTime();
+    this.time = new Date().getTime() + this.timeInterval;
+    this.grandPrize = this.contractBalance.mul(new BigNumber('0.38'))
   },
 
   // 查询开奖结果
