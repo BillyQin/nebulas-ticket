@@ -13,7 +13,7 @@ class Buy extends Component {
     this.state = {
       ballLists: [],
       totalNums: 0,
-      num: 5
+      num: 1
     }
   }
 
@@ -22,7 +22,7 @@ class Buy extends Component {
     const lists = JSON.parse(localStorage.getItem('chipIn')) || []
     this.state.ballLists = this.state.ballLists.concat(lists)
     if (newBall) {
-      this.state.ballLists.push({white: newBall.white, blue: newBall.blue, num: 5})
+      this.state.ballLists.push({white: newBall.white, blue: newBall.blue, num: 1})
     }
     this.updateBallLists(this.state.ballLists)
   }
@@ -67,6 +67,7 @@ class Buy extends Component {
   submit = () => {
     let txHash = myNebPay.call(contactAddr, this.state.totalNums*0.1, 'buyTicket', JSON.stringify([this.state.ballLists]), options)
     console.log(txHash)
+    localStorage.removeItem('chipIn')
   }
 
   render() {
