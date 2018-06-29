@@ -11,18 +11,18 @@ class User extends Component {
     super(props);
     this.state = {
       address: '未检测到钱包插件',
-      lists: [],
+      form: [],
       term: ''
     }
   }
 
-  async componentWillMount () {
+  componentWillMount () {
     const address = localStorage.getItem('address')
     if (address) {
       this.setState({address})
       this.getAccountInfo(address)
       this.getUserHistory(address)
-      this.getTerm()
+      // this.getTerm()
     }
   }
 
@@ -35,21 +35,29 @@ class User extends Component {
       }
     })
     myNeb.api.call(options).then((res) => {
-      this.setState({lists: JSON.parse(res.result)})
+      let lists = JSON.parse(res.result)
+      let form = {}
+      lists.length && lists.map((item,key) => {
+        if (!(item.term in form)) {
+          form[item.term] = []
+        }
+        form[item.term].push(item)
+      })
+      this.setState({form})
     });
   }
 
-  getTerm = () => {
-    let options = Object.assign({}, callOptions, {
-      contract: {
-        function: "getTerm",
-        args: "[]"
-      }
-    })
-    myNeb.api.call(options).then((res) => {
-      console.log(JSON.parse(res.result))
-    });
-  }
+  // getTerm = () => {
+  //   let options = Object.assign({}, callOptions, {
+  //     contract: {
+  //       function: "getTerm",
+  //       args: "[]"
+  //     }
+  //   })
+  //   myNeb.api.call(options).then((res) => {
+  //     console.log(JSON.parse(res.result))
+  //   });
+  // }
 
   getAccountInfo = (address) => {
     myNeb.api.getAccountState(address).then(res => {
@@ -72,6 +80,10 @@ class User extends Component {
     }
   }
 
+  getMoney = () => {
+
+  }
+
   render() {
     return (
       <div className="user">
@@ -80,27 +92,37 @@ class User extends Component {
         } />
         <div className="user-in-title">
           <p className="addr">{this.state.address}</p>
+          <div>
           <p className="user">余额：{this.state.balance} NAS</p>
-        </div>
-        <div>
-          { this.state.lists.length ?
-            <div>{this.state.lists.map((item, key) => (
-              <div key={key} className="list-item">
-                {item.white.map((ball,key)=>(
-                  <div className={`ball`} key={key}>{ball}</div>
-                ))}
-                <div className={`ball blue`}>{item.blue[0]}</div>
-                <div className="num">{parseFloat(item.num*0.1).toFixed(1)}</div>
-                <div>{this.getLevel(item.level)}</div>
-              </div>
-            ))}</div>:
-          <div className="none-info">
-            <p>暂无投注信息</p>
-            <Link to="/shop" className="base-btn">前往投注</Link>
+          <div onClick={()=>this.getMoney()} className="base-btn">领奖</div>
           </div>
-        }
         </div>
-        <Footer/>
+        <div className="lists">
+          { Object.keys(this.state.form).length ?
+            <div>
+              {Object.keys(this.state.form).reverse().map((term, key) => (
+                <div>
+                  <p>第{term}期</p>
+                  {this.state.form[term].map((item, key) => (
+                    <div key={key} className="list-item">
+                      {item.white.map((ball,key)=>(
+                        <div className={`ball`} key={key}>{ball}</div>
+                      ))}
+                      <div className={`ball blue`}>{item.blue[0]}</div>
+                      <div className="num">{parseFloat(item.num*0.1).toFixed(1)}</div>
+                      <div>{this.getLevel(item.level)}</div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>:
+            <div className="none-info">
+              <p>暂无投注信息</p>
+              <Link to="/shop" className="base-btn">前往投注</Link>
+            </div>
+          }
+        </div>
+        <Footer pathName='/user'/>
       </div>
     )
   }

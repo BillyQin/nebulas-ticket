@@ -4,7 +4,7 @@ import Footer from '../components/footer';
 import Header from '../components/header';
 import './home.less';
 import { randomNum } from '../utils/util';
-import { myNebPay, options, contactAddr } from '../utils/neb'
+import { myNebPay, myNeb, options, contactAddr } from '../utils/neb'
 
 class Home extends Component {
 
@@ -12,18 +12,28 @@ class Home extends Component {
     super(props);
     this.state = {
       ballLists: [],
-      num: 5
+      num: 5,
+      balance: 0
     }
   }
 
   componentWillMount () {
     this.getRandomNum()
+    this.getContactValue()
   }
 
   getRandomNum = () => {
     let ballLists = []
     ballLists = ballLists.concat(randomNum())
     this.setState({ballLists})
+  }
+
+  getContactValue = () => {
+    myNeb.api.getAccountState(contactAddr).then(res => {
+      this.setState({balance: res.balance/Math.pow(10,18)})
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
   submit = () => {
@@ -47,7 +57,7 @@ class Home extends Component {
           <div className="lists">
             <div className="price">
               <p>奖池</p>
-              <span>0NAS</span>
+              <span>{this.state.balance}NAS</span>
             </div>
             <div className="count-down-box">
               <span>距离下期开奖</span>
@@ -71,7 +81,7 @@ class Home extends Component {
             </div>
           </div>
         </main>
-        <Footer />
+        <Footer pathName='/'/>
       </div>
     )
   }

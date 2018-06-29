@@ -9,15 +9,14 @@ const randomBall = (type='whiteBall') => {
       result.push(rand)
     }
   }
-  return result
+  return result.sort((a,b)=>{return (a-b)})
 }
 
 const randomNum = () => {
-  let ballLists = [] // this.state.ballLists
+  let ballLists = []
   const white = randomBall('whiteBall')
   const blue = randomBall('blueBall')
   ballLists.push({"white": white, "blue": blue, "num": 5})
-  // this.setState({ballLists})
   return ballLists
 }
 

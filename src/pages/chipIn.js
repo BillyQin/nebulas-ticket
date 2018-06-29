@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import Footer from '../components/footer';
 import Header from '../components/header';
 import './chipIn.less';
 
-import NebPay from 'nebpay';
-const myNebPay = new NebPay();
 class Buy extends Component {
 
   constructor(props) {
@@ -59,7 +55,15 @@ class Buy extends Component {
   }
 
   submit = () => {
-    this.props.history.push('/shop')
+    const data = {
+      white: this.state.whiteBall.sort((a,b) => {return a-b}),
+      blue: this.state.blueBall
+    }
+    const path = {
+      pathname:'/shop',
+      state:data,
+    }
+    this.props.history.push(path)
   }
 
   render() {

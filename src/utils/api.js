@@ -7,13 +7,15 @@ var userTicketInfo = function (text) {
     this.blue = obj.blue;   // 蓝球
     this.num = obj.num;    // 下注数量
     this.term = obj.term;    // 下注期
-    this.level = obj.level
+    this.level = obj.level  // 中奖等级
+    this.getMoney = obj.getMoney // 是否领奖
   } else {
     this.white = []; // 白球
     this.blue = 0;   // 蓝球
     this.num = new BigNumber(0);    // 下注数量
     this.term = 0;    // 下注期
-    this.level = null
+    this.level = null  // 中奖等级
+    this.getMoney = false // 是否领奖
   }
 };
 
@@ -49,6 +51,7 @@ var LotteryTicketContract = function () {
   LocalContractStorage.defineProperty(this, "term"); //开奖期数
   LocalContractStorage.defineProperty(this, "whiteNum"); // 白球个数
   LocalContractStorage.defineProperty(this, "blueNum"); // 蓝球个数
+  LocalContractStorage.defineProperty(this, "time"); // 开奖时间
 
   // 用户下注详情
   LocalContractStorage.defineMapProperty(this, "userTicket", {
@@ -98,12 +101,16 @@ LotteryTicketContract.prototype = {
     this.minAmount = 0.1;
     this.adminAddress = 'n1XSq26wvLaZ2tqYC5Y37MPr9ujQsSsSLBr';
     this.whiteNum = 6;
+    this.time = new Date().getTime();
     this.term = 1;
+  },
+
+  getTime: function () {
+    return this.time
   },
 
   // 下注
   buyTicket: function (tickets) {
-    console.log(tickets)
     if (!tickets) {
       throw new Error("投注失败");
     }
@@ -154,7 +161,7 @@ LotteryTicketContract.prototype = {
   },
 
   // 用户兑奖
-  takeout: function (term) {
+  userTakeOut: function (term) {
     // var from = Blockchain.transaction.from;
     var result = this.getLottery(term);
 
@@ -170,7 +177,10 @@ LotteryTicketContract.prototype = {
       return this.ticketHistoryMap.get(key) || [];
     } else {
       let res = []
-      for (let i = 1; i<=this.term; i++) {
+      for (let i = this.term; i>=(this.term-50); i--) {
+        if (i === 0) {
+          break
+        }
         let key = `${from}|${i}`
         if (this.ticketHistoryMap.get(key)) {
           res = res.concat(this.ticketHistoryMap.get(key))
@@ -182,7 +192,7 @@ LotteryTicketContract.prototype = {
 
   // 取钱
   takeOut: function () {
-    // var amount = this.userTicket.get(from);
+    this._verifyAdmin();
     var from = Blockchain.transaction.from;
     var result = Blockchain.transfer(from, this.minAmount);
     if (!result) {
@@ -195,8 +205,9 @@ LotteryTicketContract.prototype = {
     var result = []
     while(result.length < digit) {
       var rand = parseInt((Math.random()*total)+1);
+      rand = rand<10?`0${rand}`:`${rand}`
       if (result.indexOf(rand) < 0) {
-        result.push(rand<10?`0${rand}`:`${rand}`)
+        result.push(rand)
       }
     }
     return result.sort((a,b) => {return a-b});
@@ -235,9 +246,21 @@ LotteryTicketContract.prototype = {
     }
   },
 
+  // 设置开奖时间(毫秒)
+  setTime: function(time) {
+    this._verifyAdmin();
+    this.time += parseInt(time);
+    return this.time;
+  },
+
   // 开奖
   openLottery: function () {
     this._verifyAdmin();
+    console.log(this.time)
+    console.log(new Date().getTime())
+    if (this.time > new Date().getTime()) {
+      throw new Error("未到开奖时间");
+    }
     var whileBall = this._getResult(28, 6);
     var blueBall = this._getResult(14, 1);
     var history = new historyInfo()
@@ -246,18 +269,18 @@ LotteryTicketContract.prototype = {
     history.term = this.term
     this.historyResult.put(this.term, history);
 
-    let total = this.ticketHistoryRecordMap.get(this.term)
-    total.map(item => {
-      let userTicket = this.ticketHistoryMap.get(item)
-      userTicket.map(i => {
+    let total = this.ticketHistoryRecordMap.get(this.term) || []
+    total.length && total.map(item => {
+      let userTicket = this.ticketHistoryMap.get(item) || []
+      userTicket.length && userTicket.map(i => {
         let level = this._getLevelPrice(history, i)
-        console.log('level', level)
         i.level =level
       })
       this.ticketHistoryMap.set(item, userTicket)
     })
 
     this.term += 1;
+    this.time = new Date().getTime();
   },
 
   // 查询开奖结果
@@ -270,6 +293,7 @@ LotteryTicketContract.prototype = {
     }
     return result
   },
+
   // 查询当前期数
   getTerm: function () {
     return this.term
@@ -277,7 +301,7 @@ LotteryTicketContract.prototype = {
 
   _verifyAdmin: function() {
     if (Blockchain.transaction.from != this.adminAddress) {
-        throw new Error("权限验证失败");
+      throw new Error("权限验证失败");
     }
   }
 };

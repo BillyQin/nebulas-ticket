@@ -37,7 +37,6 @@ class User extends Component {
           args: "[]"
       }
     }).then((res) => {
-      console.log('11111111',res.result)
       this.setState({lists: JSON.parse(res.result)})
     });
   }
@@ -53,21 +52,28 @@ class User extends Component {
           <p className="user">开奖公告</p>
           <p></p>
         </div>
-        <div>
-          { this.state.lists.length &&
-            this.state.lists.map((item, key) => (
-            <div key={key} className="list-item">
-              <p className="title">第{item.term}期</p>
-              <div className="ballLists">
-                {item.white.map((item,key)=>(
-                  <div className={`ball`} key={key}>{item}</div>
-                ))}
-                <div className={`ball blue`}>{item.blue[0]}</div>
-              </div>
+        <div className="list">
+          { this.state.lists.length > 0 ?
+            <div>
+              {
+              this.state.lists.map((item, key) => (
+              <div key={key} className="list-item">
+                <p className="title">第{item.term}期</p>
+                <div className="ballLists">
+                  {item.white.map((item,key)=>(
+                    <div className={`ball`} key={key}>{item}</div>
+                  ))}
+                  <div className={`ball blue`}>{item.blue[0]}</div>
+                </div>
+              </div>))
+              }
+            </div>:
+            <div className="none-info">
+              <p>暂无开奖信息</p>
             </div>
-          ))}
-        </div>
-        <Footer/>
+          }
+          </div>
+        <Footer pathName='/record'/>
       </div>
     )
   }
