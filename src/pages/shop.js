@@ -65,7 +65,7 @@ class Buy extends Component {
   }
 
   submit = () => {
-    let txHash = myNebPay.call(contactAddr, this.state.totalNums*0.1, 'buyTicket', JSON.stringify([this.state.ballLists]), options)
+    let txHash = myNebPay.call(contactAddr, parseFloat(this.state.totalNums*0.1).toFixed(1), 'buyTicket', JSON.stringify([this.state.ballLists]), options)
     console.log(txHash)
     localStorage.removeItem('chipIn')
   }

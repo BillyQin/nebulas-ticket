@@ -42,7 +42,9 @@ class App extends Component {
 
   render() {
     return (
-      <Routes/>
+      <div className="dream-ball">
+        <Routes/>
+      </div>
     );
   }
 }

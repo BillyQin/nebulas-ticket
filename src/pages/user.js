@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Header from '../components/header';
 import { Link } from 'react-router-dom';
-import { myNeb, contactAddr, callOptions } from '../utils/neb';
+import { myNeb, myNebPay, contactAddr, options, callOptions } from '../utils/neb';
 import Footer from '../components/footer';
 import './user.less';
 
@@ -10,7 +10,7 @@ class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      address: '未检测到钱包插件',
+      address: '',
       form: [],
       term: ''
     }
@@ -37,7 +37,6 @@ class User extends Component {
       }
     })
     myNeb.api.call(options).then((res) => {
-      console.log('userrrrr',res)
       let lists = JSON.parse(res.result)
       let form = {}
       lists.length && lists.map((item,key) => {
@@ -86,7 +85,9 @@ class User extends Component {
   }
 
   getMoney = () => {
-
+    let txHash = myNebPay.call(contactAddr, 0, 'userTakeOut', JSON.stringify([]), options)
+    console.log(txHash)
+    
   }
 
   render() {
@@ -98,7 +99,7 @@ class User extends Component {
         <div className="user-in-title">
           <p className="addr">{this.state.address}</p>
           <div className="balance">
-            <p className="user">余额：{this.state.balance} NAS</p>
+            <p className="">余额：{this.state.balance} NAS</p>
             <div onClick={()=>this.getMoney()} className="base-btn">领奖</div>
           </div>
         </div>

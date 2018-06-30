@@ -49,7 +49,7 @@ class User extends Component {
         } />
         <div className="record-in-title">
           <p className="">？</p>
-          <p className="user">开奖公告</p>
+          <p className="title">开奖公告</p>
           <p></p>
         </div>
         <div className="list">

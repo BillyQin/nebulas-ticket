@@ -7,11 +7,10 @@ import { Neb, NVM, HttpRequest } from 'nebulas';
 import NebPay from 'nebpay';
 const myNebPay = new NebPay();
 const myNeb = new Neb();
-// myNeb.setRequest(new HttpRequest("https://mainnet.nebulas.io"));
 myNeb.setRequest(new HttpRequest("https://mainnet.nebulas.io"));
 // myNeb.setRequest(new HttpRequest("http://localhost:8685"));
 
-const contactAddr = 'n1jWz4S7yUc18pjRLSHvMv6AqkcEDx839ot'
+const contactAddr = 'n1gHBapDERpRHMgi8xj4q4EUtspisULJghN'
 const addr = localStorage.getItem('address') || contactAddr
 const options = {
 	qrcode: {

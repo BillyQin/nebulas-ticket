@@ -12,7 +12,7 @@ class Home extends Component {
     super(props);
     this.state = {
       ballLists: [],
-      num: 5,
+      num: 1,
       balance: 0
     }
   }

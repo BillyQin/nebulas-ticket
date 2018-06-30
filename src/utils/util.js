@@ -16,7 +16,7 @@ const randomNum = () => {
   let ballLists = []
   const white = randomBall('whiteBall')
   const blue = randomBall('blueBall')
-  ballLists.push({"white": white, "blue": blue, "num": 5})
+  ballLists.push({"white": white, "blue": blue, "num": 1})
   return ballLists
 }
 
