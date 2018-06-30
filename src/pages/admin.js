@@ -51,8 +51,7 @@ export default class AdminPage extends Component {
   }
 
   setTime = () => {
-    let txHash = myNebPay.call(contactAddr, 0, 'setTime', JSON.stringify([this.state.time]), options)
-    console.log('12212', txHash)
+    let txHash = myNebPay.call(contactAddr, 0, 'setTime', JSON.stringify([parseInt(this.state.time*1000)]), options)
     myNebPay.queryPayInfo(txHash).then(function (resp) {
       console.log('`11`1122:',resp);
     })
@@ -74,7 +73,7 @@ export default class AdminPage extends Component {
             <p>设置开奖时间周期</p>
             <div>
               <input onChange={(e)=>{this.setState({time: e.target.value})}}/>
-              <span>毫秒</span>
+              <span>秒</span>
             </div>
             <button onClick={()=> {this.setTime()}} className="base-btn">确定</button>
           </div>

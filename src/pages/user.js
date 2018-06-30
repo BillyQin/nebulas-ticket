@@ -49,18 +49,6 @@ class User extends Component {
     });
   }
 
-  // getTerm = () => {
-  //   let options = Object.assign({}, callOptions, {
-  //     contract: {
-  //       function: "getTerm",
-  //       args: "[]"
-  //     }
-  //   })
-  //   myNeb.api.call(options).then((res) => {
-  //     console.log(JSON.parse(res.result))
-  //   });
-  // }
-
   getAccountInfo = (address) => {
     myNeb.api.getAccountState(address).then(res => {
       this.setState({balance: res.balance/Math.pow(10,18)})
@@ -87,7 +75,7 @@ class User extends Component {
   getMoney = () => {
     let txHash = myNebPay.call(contactAddr, 0, 'userTakeOut', JSON.stringify([]), options)
     console.log(txHash)
-    
+
   }
 
   render() {

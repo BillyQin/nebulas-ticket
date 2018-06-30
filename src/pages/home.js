@@ -4,7 +4,7 @@ import Footer from '../components/footer';
 import Header from '../components/header';
 import './home.less';
 import { randomNum } from '../utils/util';
-import { myNebPay, myNeb, options, contactAddr } from '../utils/neb'
+import { myNebPay, myNeb, options, contactAddr, callOptions } from '../utils/neb'
 
 class Home extends Component {
 
@@ -33,6 +33,18 @@ class Home extends Component {
       this.setState({balance: res.balance/Math.pow(10,18)})
     }).catch((err) => {
       console.log(err);
+    });
+  }
+
+  getTime = () => {
+    let options = Object.assign({}, callOptions, {
+      contract: {
+        function: "getTime",
+        args: "[]"
+      }
+    })
+    myNeb.api.call(options).then((res) => {
+      console.log(JSON.parse(res.result))
     });
   }
 

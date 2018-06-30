@@ -10,7 +10,7 @@ const myNeb = new Neb();
 myNeb.setRequest(new HttpRequest("https://mainnet.nebulas.io"));
 // myNeb.setRequest(new HttpRequest("http://localhost:8685"));
 
-const contactAddr = 'n1gHBapDERpRHMgi8xj4q4EUtspisULJghN'
+const contactAddr = 'n1zJKEZtX9qB81st3wZnMc7UvwJJEjapiRG'
 const addr = localStorage.getItem('address') || contactAddr
 const options = {
 	qrcode: {

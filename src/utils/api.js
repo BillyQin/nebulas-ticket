@@ -45,6 +45,9 @@ historyInfo.prototype = {
 
 var LotteryTicketContract = function () {
   LocalContractStorage.defineProperty(this, "adminAddress");
+  LocalContractStorage.defineProperty(this, "regulatoryFund");
+  LocalContractStorage.defineProperty(this, "charitableFund");
+
   LocalContractStorage.defineProperty(this, "minAmount");
   LocalContractStorage.defineProperty(this, "term");
   LocalContractStorage.defineProperty(this, "whiteNum");
@@ -124,13 +127,17 @@ LotteryTicketContract.prototype = {
   init: function () {
     //TODO:
     this.minAmount = 0.1;
+    // this.adminAddress = 'n1aq3WvD3wC4NorWbsQ2G8d4Bf5LY9qbQ81';
     this.adminAddress = 'n1XSq26wvLaZ2tqYC5Y37MPr9ujQsSsSLBr';
+
     this.whiteNum = 6;
     this.time = new Date().getTime();
     this.timeInterval = 0;
     this.term = 1;
     this.contractBalance = new BigNumber(0);
     this.grandPrize = new BigNumber(0);
+    this.regulatoryFund = 'n1LgptRocdWe2CJtTRAucQwXcn41kNyd86x';
+    this.charitableFund = 'n1XYSY8LeTgQwam3hStNFxKz58TJ54S9Kzb';
   },
 
   getTime: function () {
@@ -194,7 +201,7 @@ LotteryTicketContract.prototype = {
     let term = this.userMoneyTermMap.get(from) || 0
 
     for(let i = this.term-1; i >= term; i--) {
-      let key = `${from}|${term}`
+      let key = `${from}|${i}`
       let info = this.ticketHistoryMap.get(key) || []
 
       if (info.length) {
@@ -211,10 +218,10 @@ LotteryTicketContract.prototype = {
               default: value = new BigNumber('0');break;
             }
             if (value.toString() !== '0') {
-              let result = Blockchain.transfer(from, value.mul(new BigNumber('1e18')));
-              if (!result) {
-                throw new Error("tranfer failed.");
-              }
+              let result = Blockchain.transfer(from, value.mul(new BigNumber('1e18').mul(item.num)));
+              // if (!result) {
+              //   throw new Error("tranfer failed.");
+              // }
               this.contractBalance = this.contractBalance.minus(value)
               item.level = 7
             }
@@ -308,7 +315,7 @@ LotteryTicketContract.prototype = {
   },
 
   // set time interval(ms)
-  setTime: function(time) {
+  setTimeInterval: function(time) {
     this._verifyAdmin();
     this.timeInterval = parseInt(time)
     return this.timeInterval;
@@ -340,6 +347,9 @@ LotteryTicketContract.prototype = {
     this.term += 1;
     this.time = new Date().getTime() + this.timeInterval;
     this.grandPrize = this.contractBalance.mul(new BigNumber('0.38'))
+    Blockchain.transfer(this.regulatoryFund, this.contractBalance.mul(new BigNumber('0.01')));
+    Blockchain.transfer(this.charitableFund, this.contractBalance.mul(new BigNumber('0.3')));
+    this.contractBalance = new BigNumber('0')
   },
 
   // query result
