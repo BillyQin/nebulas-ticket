@@ -1,16 +1,12 @@
-// var HttpRequest = require("nebulas").HttpRequest;
-import { Neb, NVM, HttpRequest } from 'nebulas';
-// var Account = require("nebulas").Account;
-// var Transaction = require("nebulas").Transaction;
-// var Unit = require("nebulas").Unit;
-// var NVM = require("nebulas").NVM;
+import { Neb, HttpRequest } from 'nebulas';
 import NebPay from 'nebpay';
+import Config from '../config/config';
 const myNebPay = new NebPay();
 const myNeb = new Neb();
-myNeb.setRequest(new HttpRequest("https://mainnet.nebulas.io"));
+myNeb.setRequest(new HttpRequest(Config.nebHttp));
 // myNeb.setRequest(new HttpRequest("http://localhost:8685"));
 
-const contactAddr = 'n1zJKEZtX9qB81st3wZnMc7UvwJJEjapiRG'
+const contactAddr = ''
 const addr = localStorage.getItem('address') || contactAddr
 const options = {
 	qrcode: {

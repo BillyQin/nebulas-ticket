@@ -51,7 +51,7 @@ export default class AdminPage extends Component {
   }
 
   setTime = () => {
-    let txHash = myNebPay.call(contactAddr, 0, 'setTime', JSON.stringify([parseInt(this.state.time*1000)]), options)
+    let txHash = myNebPay.call(contactAddr, 0, 'setTimeInterval', JSON.stringify([parseInt(this.state.time*1000)]), options)
     myNebPay.queryPayInfo(txHash).then(function (resp) {
       console.log('`11`1122:',resp);
     })

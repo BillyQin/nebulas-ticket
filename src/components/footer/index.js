@@ -16,7 +16,7 @@ class Footer extends Component {
 
   render() {
     return (
-      <div className='Footer'>
+      <div className='footer'>
         {pages.map((item, key) => (
           <Link key={key} to={item.link} className={`item ${this.props.pathName === item.link? 'blue' : ''}`}>
             <img src={this.props.pathName === item.link? item.active : item.img}/>

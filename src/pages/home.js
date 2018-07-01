@@ -20,6 +20,7 @@ class Home extends Component {
   componentWillMount () {
     this.getRandomNum()
     this.getContactValue()
+    this.getTime()
   }
 
   getRandomNum = () => {

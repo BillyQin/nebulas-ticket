@@ -127,8 +127,7 @@ LotteryTicketContract.prototype = {
   init: function () {
     //TODO:
     this.minAmount = 0.1;
-    // this.adminAddress = 'n1aq3WvD3wC4NorWbsQ2G8d4Bf5LY9qbQ81';
-    this.adminAddress = 'n1XSq26wvLaZ2tqYC5Y37MPr9ujQsSsSLBr';
+    this.adminAddress = 'n1aq3WvD3wC4NorWbsQ2G8d4Bf5LY9qbQ81';
 
     this.whiteNum = 6;
     this.time = new Date().getTime();
@@ -199,6 +198,7 @@ LotteryTicketContract.prototype = {
   userTakeOut: function () {
     var from = Blockchain.transaction.from;
     let term = this.userMoneyTermMap.get(from) || 0
+    let tranferFail = true
 
     for(let i = this.term-1; i >= term; i--) {
       let key = `${from}|${i}`
@@ -219,19 +219,22 @@ LotteryTicketContract.prototype = {
             }
             if (value.toString() !== '0') {
               let result = Blockchain.transfer(from, value.mul(new BigNumber('1e18').mul(item.num)));
-              // if (!result) {
-              //   throw new Error("tranfer failed.");
-              // }
-              this.contractBalance = this.contractBalance.minus(value)
-              item.level = 7
+              if (result) {
+                this.contractBalance = this.contractBalance.minus(value)
+                item.level = 7
+              } else {
+                tranferFail = false
+              }
             }
           }
         })
       }
       this.ticketHistoryMap.set(key, info)
     }
-    term = this.term
-    this.userMoneyTermMap.set(from, term)
+    if (tranferFail) {
+      term = this.term
+      this.userMoneyTermMap.set(from, term)
+    }
   },
 
   // query ticket
@@ -368,11 +371,15 @@ LotteryTicketContract.prototype = {
     return this.term
   },
 
-  changeAdmin: function (address) {
+  changeAdmin: function (type, address) {
     this._verifyAdmin()
     if (Blockchain.verifyAddress(address) === 87) {
-      this.adminAddress = address
-      return
+      switch (type) {
+        case 1: this.adminAddress = address;return;
+        case 2: this.regulatoryFund = address;return;
+        case 3: this.charitableFund = address;return;
+        default: return;
+      }
     }
     throw new Error("this is not a user address.");
   },

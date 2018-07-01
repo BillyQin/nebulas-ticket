@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Routes from './router';
+import './App.less';
 
 class App extends Component {
 
@@ -10,7 +11,7 @@ class App extends Component {
   componentWillMount() {
     // 字体使用 rem, 1rem = 100px;
     const devWidth = document.documentElement.clientWidth
-    const size = ((devWidth > 640 ? 640 : devWidth) / 10.8) + 'px'
+    const size = ((devWidth > 768 ? 375 : devWidth) / 10.8) + 'px'
     document.documentElement.style.fontSize = size
     window.addEventListener('orientationchange', function () {
       document.documentElement.style.fontSize = size
@@ -42,8 +43,10 @@ class App extends Component {
 
   render() {
     return (
-      <div className="dream-ball">
-        <Routes/>
+      <div className="dream-ball-wrap">
+        <div className="dream-ball">
+          <Routes/>
+        </div>
       </div>
     );
   }
