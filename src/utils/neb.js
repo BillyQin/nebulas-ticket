@@ -6,7 +6,7 @@ const myNeb = new Neb();
 myNeb.setRequest(new HttpRequest(Config.nebHttp));
 // myNeb.setRequest(new HttpRequest("http://localhost:8685"));
 
-const contactAddr = ''
+const contactAddr = Config.contarctAddr;
 const addr = localStorage.getItem('address') || contactAddr
 const options = {
 	qrcode: {
