@@ -16,14 +16,15 @@
     }
 
     .sub {
-      font-size: 0.38rem;
-      margin: 0.45rem 0 0.35rem;
+      font-size: 0.42rem;
+      font-weight: 400;
+      margin: 0.25rem 0 0.25rem;
     }
 
     .intro {
-      font-size: 0.15rem;
-      font-weight: 300;
-      line-height: 0.3rem;
+      font-size: 0.10rem;
+      font-weight: 100;
+      line-height: 0.6rem;
     }
   }
 
@@ -38,6 +39,7 @@
       background: @blue;
       color: #fff;
       margin: 0.4rem 0 0.5rem;
+      padding: 0.3rem 0 0.3rem;
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -49,6 +51,9 @@
       span {
         font-size: 0.42rem;
       }
+      .unit {
+        font-size: 0.3rem;
+      }
     }
 
     .price {
@@ -57,14 +62,19 @@
       justify-content: center;
       align-items: center;
 
-      p{
-        margin: 0.44rem 0 0.62rem;
+      p {
+        margin: 0;
         font-size: 0.42rem;
         color: #4a5470;
       }
       span {
         font-size: 1.03rem;
         color: #ff5a00;
+        text-shadow: 0px 5px 5px rgba(89, 88, 90, 0.29);
+      }
+      .time {
+        margin: 0.6rem 0 0.45rem;
+        font-size: 0.53rem;
       }
     }
 
@@ -73,7 +83,7 @@
       justify-content: flex-start;
       align-items: center;
       padding: 0;
-      margin: 0 -0.1rem;
+      background: transparent;
 
       input {
         margin: 0 0rem 0 0.4rem;
@@ -130,5 +140,16 @@
         margin-left: 0.7rem;
       }
     }
+  }
+
+  .part-title {
+    font-size: 0.53rem;
+    margin-bottom: 0.5rem;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #4a5470;
   }
 }

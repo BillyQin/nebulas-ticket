@@ -5,18 +5,19 @@
   width: 100%;
 
   .shop-in-title {
-    height: 1.75rem;
-    padding: 0.5rem 0.68rem 0.4rem;
+    height: 2.4rem;
+    padding: 0.5rem 0 0.45rem;
     background: @blue;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 
-    .left {
-      .name {
-        margin-right: 1.1rem;
-      }
+    .top {
+      font-size: 0.62rem;
+    }
+    .bottom {
+      font-size: 0.4rem;
     }
   }
 
@@ -133,12 +134,14 @@
 
   .confirm {
     width: 100%;
-    height: 2rem;
+    height: 1.35rem;
     background: #fff;
     padding-left: 1.08rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 0.4rem;
+
     img {
       width: 1rem;
       height: 1rem;
@@ -162,6 +165,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    .amount {
+      color: #ff5a00;
     }
   }
 }

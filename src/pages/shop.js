@@ -4,7 +4,7 @@ import Header from '../components/header';
 import Footer from '../components/footer';
 import './shop.less';
 import { myNebPay, options, contactAddr } from '../utils/neb'
-import { randomNum } from '../utils/util';
+import { randomNum, countDownTime } from '../utils/util';
 
 class Buy extends Component {
 
@@ -13,7 +13,9 @@ class Buy extends Component {
     this.state = {
       ballLists: [],
       totalNums: 0,
-      num: 1
+      num: 1,
+      contactBalance: JSON.parse(localStorage.getItem('contactBalance')) || 0,
+      contactTime: JSON.parse(localStorage.getItem('contactTime')) || 0
     }
   }
 
@@ -67,7 +69,6 @@ class Buy extends Component {
   submit = () => {
     let lists = this.state.ballLists
     lists.map(item => {
-      console.log(item.num, item.blue)
       item.num = item.num*(this.state.num || 0)
     })
     let txHash = myNebPay.call(contactAddr, parseFloat(this.state.totalNums*0.1).toFixed(1), 'buyTicket', JSON.stringify([lists]), options)
@@ -82,8 +83,8 @@ class Buy extends Component {
           <img className="header-img" onClick={()=>this.props.history.goBack()} src={require('../assets/images/back.png')}/>
         } />
         <div className="shop-in-title">
-          <p>头奖: 100nas</p>
-          <p>距离下期开奖还有：xx-xx-xx</p>
+          <p className="top">{`Jackpot：${this.state.contactBalance} NAS`}</p>
+          <p className="bottom">{`Countdown to Drawing: ${countDownTime(this.state.contactTime)}`}</p>
         </div>
         <div className="nums">
           <div className="lists">
@@ -106,15 +107,16 @@ class Buy extends Component {
               <img src={require('../assets/images/xx.png')} />
               <input type="number" onChange={(e) => {this._changeNum(e.target.value)}} defaultValue={this.state.num} />
             </div>
-            <div onClick={()=>this.goChipIn()} className="base-btn">选号</div>
-            <div onClick={()=>this.getRandomNum()} className="base-btn">快速选号</div>
+            <div onClick={()=>this.goChipIn()} className="base-btn">pick</div>
+            <div onClick={()=>this.getRandomNum()} className="base-btn">quick pick</div>
           </div>
         </div>
         <div className="confirm">
           <div className="total-price">
-            <p>总计：{this.state.totalNums}注 {}NAS</p>
+            <p>total：{this.state.totalNums} tickets</p>
           </div>
-          <div className="btn" onClick={()=>{this.submit()}}>购买</div>
+          <p className="amount">{parseFloat(this.state.totalNums*0.1).toFixed(1)}Nas</p>
+          <div className="btn" onClick={()=>{this.submit()}}>Buy</div>
         </div>
         <Footer pathName='/shop'/>
       </div>

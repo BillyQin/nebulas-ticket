@@ -9,7 +9,7 @@ class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      address: '未检测到钱包插件',
+      address: '',
       lists: []
     }
   }
@@ -49,7 +49,7 @@ class User extends Component {
         } />
         <div className="record-in-title">
           <p className="">？</p>
-          <p className="title">开奖公告</p>
+          <p className="title">Winning Numbers</p>
           <p></p>
         </div>
         <div className="list">
@@ -58,7 +58,7 @@ class User extends Component {
               {
               this.state.lists.map((item, key) => (
               <div key={key} className="list-item">
-                <p className="title">第{item.term}期</p>
+                <p className="title">No.{item.term}</p>
                 <div className="ballLists">
                   {item.white.map((item,key)=>(
                     <div className={`ball`} key={key}>{item}</div>
@@ -69,7 +69,7 @@ class User extends Component {
               }
             </div>:
             <div className="none-info">
-              <p>暂无开奖信息</p>
+              <p>Not available</p>
             </div>
           }
           </div>

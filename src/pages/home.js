@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import Footer from '../components/footer';
 import Header from '../components/header';
-import './home.less';
-import { randomNum } from '../utils/util';
+import { randomNum, countDownTime, transTime } from '../utils/util';
 import { myNebPay, myNeb, options, contactAddr, callOptions } from '../utils/neb'
+import './home.less';
 
 class Home extends Component {
 
@@ -13,7 +12,8 @@ class Home extends Component {
     this.state = {
       ballLists: [],
       num: 1,
-      balance: 0
+      balance: 0,
+      time: 0
     }
   }
 
@@ -31,7 +31,9 @@ class Home extends Component {
 
   getContactValue = () => {
     myNeb.api.getAccountState(contactAddr).then(res => {
-      this.setState({balance: res.balance/Math.pow(10,18)})
+      const balance = res.balance/Math.pow(10,18)
+      localStorage.setItem('contactBalance', balance)
+      this.setState({balance})
     }).catch((err) => {
       console.log(err);
     });
@@ -45,7 +47,9 @@ class Home extends Component {
       }
     })
     myNeb.api.call(options).then((res) => {
-      console.log(JSON.parse(res.result))
+      let time = JSON.parse(res.result)
+      localStorage.setItem('contactTime', time)
+      this.setState({time})
     });
   }
 
@@ -60,22 +64,28 @@ class Home extends Component {
       <div className="home">
         <Header />
         <div className="banner">
-          <h1>全球梦想球彩票</h1>
-          <p className="sub">LOREM IPSUM</p>
-          {/* <p className="intro">Lorem ipsum dolor sit amet.</p>
-          <p className="intro">c,nsectetur adposcing elit.</p>
-          <p className="intro">Sed vestibulum mi nec nist.</p> */}
+          <h1>Super DreamBall Lotto</h1>
+          <p className="sub">One Ticket One Dream!</p>
+          <p className="intro">The most open and fair lottery ticket in the world.</p>
+          <p className="intro">70% of the world's highest return rate.</p>
         </div>
         <main>
           <div className="lists">
             <div className="price">
-              <p>奖池</p>
-              <span>{this.state.balance}NAS</span>
+              <p className="part-title time">Next Drawing-{transTime(this.state.time)}</p>
+              <p className="part-title">Estimated Jackpot</p>
+              <span>{this.state.balance} Nas</span>
             </div>
             <div className="count-down-box">
-              <span>距离下期开奖</span>
-              <p>12:14:12</p>
+              <span>Countdown to Drawing</span>
+              <p>{countDownTime(this.state.time)}</p>
+              <p className="unit">
+                <span>Day</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span>Hr</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span>Min</span>
+              </p>
             </div>
+            <p className="part-title">Lucky Numbers</p>
             {
               this.state.ballLists.length &&
               this.state.ballLists.map((item,key) => (
@@ -90,7 +100,7 @@ class Home extends Component {
             <div className="btn-group">
               <img src={require('../assets/images/xx.png')} />
               <input type="number" onChange={(e) => {this.setState({num: e.target.value})}} defaultValue={this.state.num} />
-              <div onClick={()=>this.submit()} className="base-btn">快速投注</div>
+              <div onClick={()=>this.submit()} className="base-btn">quick pick</div>
             </div>
           </div>
         </main>

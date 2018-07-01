@@ -87,8 +87,8 @@ class User extends Component {
         <div className="user-in-title">
           <p className="addr">{this.state.address}</p>
           <div className="balance">
-            <p className="">余额：{this.state.balance} NAS</p>
-            <div onClick={()=>this.getMoney()} className="base-btn">领奖</div>
+            <p className="">Balance: {this.state.balance} NAS</p>
+            <div onClick={()=>this.getMoney()} className="base-btn">Take the prize</div>
           </div>
         </div>
         <div className="lists">
@@ -96,7 +96,7 @@ class User extends Component {
             <div>
               {Object.keys(this.state.form).reverse().map((term, key) => (
                 <div>
-                  <p>第{term}期</p>
+                  <p>No.{term}</p>
                   {this.state.form[term].map((item, key) => (
                     <div key={key} className="list-item">
                       {item.white.map((ball,key)=>(
@@ -111,8 +111,8 @@ class User extends Component {
               ))}
             </div>:
             <div className="none-info">
-              <p>暂无投注信息</p>
-              <Link to="/shop" className="base-btn">前往投注</Link>
+              <p>Not available</p>
+              <Link to="/shop" className="base-btn">Go pick</Link>
             </div>
           }
         </div>
