@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Footer from '../components/footer';
 import Header from '../components/header';
+import { Toast } from 'antd-mobile';
 import { randomNum, countDownTime, transTime } from '../utils/util';
-import { myNebPay, myNeb, options, contactAddr, callOptions } from '../utils/neb'
+import { myNebPay, myNeb, options, contactAddr, callOptions, funcIntervalQuery, listenerFunction } from '../utils/neb'
 import './home.less';
 
 class Home extends Component {
@@ -13,14 +14,23 @@ class Home extends Component {
       ballLists: [],
       num: 1,
       balance: 0,
-      time: 0
-    }
+      time: 0,
+      countDownShowTime: ``
+    },
+    this.countDown = null
   }
 
   componentWillMount () {
     this.getRandomNum()
     this.getContactValue()
     this.getTime()
+    this.countDown = setInterval(() => {
+      this.setState({countDownShowTime: countDownTime(this.state.time)})
+    }, 1000)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.countDown)
   }
 
   getRandomNum = () => {
@@ -49,14 +59,19 @@ class Home extends Component {
     myNeb.api.call(options).then((res) => {
       let time = JSON.parse(res.result)
       localStorage.setItem('contactTime', time)
+      console.log('time',time)
       this.setState({time})
     });
   }
 
   submit = () => {
     const totalPrice = this.state.num * 0.1
-    const txHash = myNebPay.call(contactAddr, totalPrice, 'buyTicket', JSON.stringify([this.state.ballLists]), options)
-    console.log(txHash)
+    let option = Object.assign({}, options, {listener: listenerFunction})
+    const serialNumber = myNebPay.call(contactAddr, totalPrice, 'buyTicket', JSON.stringify([this.state.ballLists]), option)
+    Toast.loading('Waiting to be confirm...', 60, null);
+    let intervalQuery = setInterval(() => {
+      funcIntervalQuery(intervalQuery, serialNumber)
+    }, 10000);
   }
 
   render() {
@@ -78,11 +93,11 @@ class Home extends Component {
             </div>
             <div className="count-down-box">
               <span>Countdown to Drawing</span>
-              <p>{countDownTime(this.state.time)}</p>
+              <p>{this.state.countDownShowTime}</p>
               <p className="unit">
-                <span>Day</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span>Hr</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span>Min</span>
+                <span>Min</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span>Sec</span>
               </p>
             </div>
             <p className="part-title">Lucky Numbers</p>
