@@ -3,6 +3,7 @@ import Header from '../components/header';
 import { Link } from 'react-router-dom';
 import { myNeb, myNebPay, contactAddr, options, callOptions } from '../utils/neb';
 import Footer from '../components/footer';
+import { Toast } from 'antd-mobile';
 import './user.less';
 
 class User extends Component {
@@ -17,12 +18,16 @@ class User extends Component {
   }
 
   async componentWillMount () {
-    const address = localStorage.getItem('address')
+    const address = localStorage.getItem('address') || ''
     if (address) {
+      Toast.loading('Get data from Nebulas...', 15, null);
       this.setState({address})
       await this.getAccountInfo(address)
+      if (localStorage.getItem('userRecord')) {
+        this.setState({form: JSON.parse(localStorage.getItem('userRecord'))})
+        Toast.hide()
+      }
       this.getUserHistory(address)
-      // this.getTerm()
     }
   }
 
@@ -37,15 +42,19 @@ class User extends Component {
       }
     })
     myNeb.api.call(options).then((res) => {
-      let lists = JSON.parse(res.result)
-      let form = {}
-      lists.length && lists.map((item,key) => {
-        if (!(item.term in form)) {
-          form[item.term] = []
-        }
-        form[item.term].push(item)
-      })
-      this.setState({form})
+      if (res) {
+        let lists = JSON.parse(res.result)
+        let form = {}
+        lists.length && lists.map((item,key) => {
+          if (!(item.term in form)) {
+            form[item.term] = []
+          }
+          form[item.term].push(item)
+        })
+        localStorage.setItem('userRecord', JSON.stringify(form))
+        Toast.hide()
+        this.setState({form})
+      }
     });
   }
 

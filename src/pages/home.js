@@ -74,7 +74,7 @@ class Home extends Component {
             <div className="price">
               <p className="part-title time">Next Drawing-{transTime(this.state.time)}</p>
               <p className="part-title">Estimated Jackpot</p>
-              <span>{this.state.balance} Nas</span>
+              <span>{parseFloat(1500 + parseFloat(this.state.balance))} Nas</span>
             </div>
             <div className="count-down-box">
               <span>Countdown to Drawing</span>

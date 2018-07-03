@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Header from '../components/header';
 import { myNeb, contactAddr } from '../utils/neb';
 import Footer from '../components/footer';
+import { Toast } from 'antd-mobile';
 import './record.less';
 
 class User extends Component {
@@ -17,8 +18,11 @@ class User extends Component {
   componentWillMount () {
     const address = localStorage.getItem('address')
     if (address) {
-      this.setState({address})
-      // this.getAccountInfo(address)
+      Toast.loading('Get data from Nebulas...', 15, null);
+      if (localStorage.getItem('recordHistory')) {
+        this.setState({lists: JSON.parse(localStorage.getItem('recordHistory')),address})
+        Toast.hide()
+      }
       this.getLottery(address)
     }
   }
@@ -37,7 +41,11 @@ class User extends Component {
           args: "[]"
       }
     }).then((res) => {
-      this.setState({lists: JSON.parse(res.result)})
+      if (res) {
+        localStorage.setItem('recordHistory', res.result)
+        Toast.hide()
+        this.setState({lists: JSON.parse(res.result),address: addr})
+      }
     });
   }
 
