@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Routes from './router';
-import 'antd-mobile/dist/antd-mobile.less';
+import 'antd-mobile/dist/antd-mobile.css';
 import './App.less';
 
 class App extends Component {
