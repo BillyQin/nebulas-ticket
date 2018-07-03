@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import Header from '../components/header';
 import Footer from '../components/footer';
+import { Toast } from 'antd-mobile';
 import './shop.less';
-import { myNebPay, options, contactAddr } from '../utils/neb'
+import { myNebPay, options, contactAddr, listenerFunction, funcIntervalQuery } from '../utils/neb'
 import { randomNum, countDownTime } from '../utils/util';
 
 class Buy extends Component {
@@ -71,8 +71,15 @@ class Buy extends Component {
     lists.map(item => {
       item.num = item.num*(this.state.num || 0)
     })
-    let txHash = myNebPay.call(contactAddr, parseFloat(this.state.totalNums*0.1).toFixed(1), 'buyTicket', JSON.stringify([lists]), options)
-    console.log(txHash)
+
+    let option = Object.assign({}, options, {listener: listenerFunction})
+
+    let serialNumber = myNebPay.call(contactAddr, parseFloat(this.state.totalNums*0.1).toFixed(1), 'buyTicket', JSON.stringify([lists]), option)
+    console.log(serialNumber)
+    Toast.loading('Waiting to be confirm...', 60, null);
+    let intervalQuery = setInterval(() => {
+      funcIntervalQuery(intervalQuery, serialNumber)
+    }, 10000);
     localStorage.removeItem('chipIn')
   }
 

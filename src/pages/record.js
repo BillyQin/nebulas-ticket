@@ -18,10 +18,10 @@ class User extends Component {
   componentWillMount () {
     const address = localStorage.getItem('address')
     if (address) {
-      Toast.loading('Get data from Nebulas...', 15, null);
+      Toast.loading('Get data from Nebulas...', 15, null, false);
       if (localStorage.getItem('recordHistory')) {
-        this.setState({lists: JSON.parse(localStorage.getItem('recordHistory')),address})
         Toast.hide()
+        this.setState({lists: JSON.parse(localStorage.getItem('recordHistory')),address})
       }
       this.getLottery(address)
     }
@@ -42,11 +42,15 @@ class User extends Component {
       }
     }).then((res) => {
       if (res) {
-        localStorage.setItem('recordHistory', res.result)
         Toast.hide()
+        localStorage.setItem('recordHistory', res.result)
         this.setState({lists: JSON.parse(res.result),address: addr})
       }
     });
+  }
+
+  componentWillUnmount () {
+    Toast.hide()
   }
 
   render() {

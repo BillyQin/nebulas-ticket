@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Header from '../components/header';
 import { Link } from 'react-router-dom';
-import { myNeb, myNebPay, contactAddr, options, callOptions } from '../utils/neb';
+import { myNeb, myNebPay, contactAddr, options, callOptions, funcIntervalQuery, listenerFunction } from '../utils/neb';
 import Footer from '../components/footer';
 import { Toast } from 'antd-mobile';
 import './user.less';
@@ -69,22 +69,25 @@ class User extends Component {
 
   getLevel = (level) => {
     switch (level) {
-      case 0: return '未中奖';
-      case 1: return '一等奖';
-      case 2: return '二等奖';
-      case 3: return '三等奖';
-      case 4: return '四等奖';
-      case 5: return '五等奖';
-      case 6: return '六等奖';
-      case 7: return '已领奖';
-      default: return '未开奖'
+      case 0: return 'Losing';
+      case 1: return 'Grand Prize';
+      case 2: return '1500 Nas';
+      case 3: return '100 Nas';
+      case 4: return '5 Nas';
+      case 5: return '0.5 Nas';
+      case 6: return '0.2 Nas';
+      case 7: return 'Receive';
+      default: return 'Waiting open'
     }
   }
 
   getMoney = () => {
-    let txHash = myNebPay.call(contactAddr, 0, 'userTakeOut', JSON.stringify([]), options)
-    console.log(txHash)
-
+    let option = Object.assign({}, options, {listener: listenerFunction})
+    let serialNumber = myNebPay.call(contactAddr, 0, 'userTakeOut', JSON.stringify([]), option)
+    Toast.loading('Waiting to be confirm...', 60, null);
+    let intervalQuery = setInterval(() => {
+      funcIntervalQuery(intervalQuery, serialNumber)
+    }, 10000);
   }
 
   render() {

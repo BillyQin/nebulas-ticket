@@ -77,7 +77,7 @@ class Buy extends Component {
             <span className="name">White</span>
             <span>{this.state.whiteBall.length}/6</span>
           </div>
-          <div onClick={()=> {this.randomBall('whiteBall')}} className="button">随机选</div>
+          <div onClick={()=> {this.randomBall('whiteBall')}} className="button">Random Select</div>
         </div>
         <div className="nums">
         {
@@ -94,7 +94,7 @@ class Buy extends Component {
             <span className="name">Blue</span>
             <span>{this.state.blueBall.length}/1</span>
           </div>
-          <div onClick={()=> {this.randomBall('blueBall')}}  className="button">随机选</div>
+          <div onClick={()=> {this.randomBall('blueBall')}}  className="button">Random Select</div>
         </div>
         <div className="nums dark">
         {

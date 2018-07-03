@@ -1,6 +1,7 @@
 import { Neb, HttpRequest } from 'nebulas';
 import NebPay from 'nebpay';
 import Config from '../config/config';
+import { Toast } from 'antd-mobile';
 const myNebPay = new NebPay();
 const myNeb = new Neb();
 myNeb.setRequest(new HttpRequest(Config.nebHttp));
@@ -47,10 +48,36 @@ const callOptions = {
 	gasLimit: '2000000'
 }
 
+//定义listener函数作为返回信息的回调
+const listenerFunction = (serialNumber,result) => {
+	// console.log(`the transaction result for ${serialNumber} is: ` + JSON.stringify(result))
+	Toast.info(JSON.stringify(result), 2, null, false)
+}
+
+const funcIntervalQuery = (intervalQuery, serialNumber) => {
+	//queryPayInfo的options参数用来指定查询交易的服务器地址,(如果是主网可以忽略,因为默认服务器是在主网查询)
+	myNebPay.queryPayInfo(serialNumber, options)   //search transaction result from server (result upload to server by app)
+	.then(function (resp) {
+		console.log("tx result: " + resp)   //resp is a JSON string
+		var respObject = JSON.parse(resp)
+		//code==0交易发送成功, status==1交易已被打包上链
+		if(respObject.code === 0 && respObject.data.status === 1){
+			//交易成功,处理后续任务....
+			Toast.hide()
+			clearInterval(intervalQuery)    //清除定时查询
+		}
+	})
+	.catch(function (err) {
+		Toast.info(err, 2, null, false)
+	});
+}
+
 export {
   myNebPay,
   options,
 	contactAddr,
 	myNeb,
-	callOptions
+	callOptions,
+	listenerFunction,
+	funcIntervalQuery
 }
